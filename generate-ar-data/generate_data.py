@@ -3,7 +3,7 @@ from sklearn.model_selection import train_test_split
 
 class TimeSeriesData:
     def __init__(self, num_datapoints, test_size=0.2, max_t=20, num_prev=1,
-                 noise_var=1, random_split=False):
+                 noise_var=1):
         """
         Template class for generating time series data.
         :param test_size: in (0,1), data to be used in test set as a fraction of all data generated.
@@ -21,7 +21,7 @@ class TimeSeriesData:
         self.create_data()
 
         # Split into training and test sets
-        self.train_test_split(random=random_split)
+        self.train_test_split()
 
     def create_data(self):
         self.generate_data()
@@ -66,7 +66,7 @@ class ARData(TimeSeriesData):
         self.generate_coefficients()
         self.generate_initial_points()
         for i in range(self.num_datapoints):
-            # Generate y value if there was no noise 
+            # Generate y value if there was no noise
             # (equivalent to Bayes predictions: predictions from oracle that knows true parameters (coefficients))
             self.bayes_preds[i + self.num_prev] = np.dot(self.y[i:self.num_prev+i][::-1], self.coeffs)
             # Add noise
