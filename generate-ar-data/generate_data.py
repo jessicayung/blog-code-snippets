@@ -1,3 +1,11 @@
+"""
+Code to generate autoregressive data.
+
+Blog post: http://www.jessicayung.com/generating-autoregressive-data-for-experiments=
+
+Author: Jessiac Yung
+Sept 2018
+"""
 import numpy as np
 from sklearn.model_selection import train_test_split
 
