@@ -22,7 +22,7 @@ class TimeSeriesData:
         self.max_t = max_t
         self.data = None
         self.noise_var = noise_var
-        self.y = np.zeros(num_datapoints + num_prev) # TODO: check this
+        self.y = np.zeros(num_datapoints + num_prev*4) # TODO: check this
         self.bayes_preds = np.copy(self.y)
 
         # Generate data and reshape data
@@ -73,12 +73,19 @@ class ARData(TimeSeriesData):
     def generate_data(self):
         self.generate_coefficients()
         self.generate_initial_points()
-        for i in range(self.num_datapoints):
+
+        # + 3*self.num_prev because we want to cut first (3*self.num_prev) datapoints later
+        # so dist is more stationary (else initial num_prev datapoints will stand out as diff dist)
+        for i in range(self.num_datapoints+3*self.num_prev):
             # Generate y value if there was no noise
             # (equivalent to Bayes predictions: predictions from oracle that knows true parameters (coefficients))
             self.bayes_preds[i + self.num_prev] = np.dot(self.y[i:self.num_prev+i][::-1], self.coeffs)
             # Add noise
             self.y[i + self.num_prev] = self.bayes_preds[i + self.num_prev] + self.noise()
+
+        # Cut first 20 points so dist is roughly stationary
+        self.bayes_preds = self.bayes_preds[3*self.num_prev:]
+        self.y = self.y[3*self.num_prev:]
 
     def generate_coefficients(self):
         if self.given_coeffs is not None:
